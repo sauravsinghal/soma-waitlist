@@ -13,6 +13,15 @@ const Hero: React.FC<HeroProps> = ({ data, onLog, isLiveActive, onToggleLive }) 
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState<'IDLE' | 'PROCESSING' | 'SUCCESS' | 'ERROR'>('IDLE');
 
+  const playHoverSound = () => {
+    // Futuristic digital blip sound
+    const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3');
+    audio.volume = 0.15;
+    audio.play().catch(() => {
+      // Browsers often block auto-play audio unless user has interacted
+    });
+  };
+
   const handleExecute = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
 
@@ -27,7 +36,6 @@ const Hero: React.FC<HeroProps> = ({ data, onLog, isLiveActive, onToggleLive }) 
     onLog('INFO', 'UPLINK', 'ESTABLISHING_ENCRYPTED_CONNECTION...');
     
     try {
-      // REPLACE THE URL BELOW WITH YOUR ACTUAL MAKE.COM WEBHOOK URL
       const WEBHOOK_URL = "https://hook.eu1.make.com/YOUR_WEBHOOK_ID_HERE";
       
       const response = await fetch(WEBHOOK_URL, {
@@ -102,13 +110,13 @@ const Hero: React.FC<HeroProps> = ({ data, onLog, isLiveActive, onToggleLive }) 
       <div className="max-w-md mx-auto pt-4">
         <button 
           onClick={onToggleLive}
+          onMouseEnter={playHoverSound}
           className={`w-full group relative flex items-center justify-center gap-4 px-8 py-6 text-sm font-bold tracking-[0.3em] uppercase transition-all duration-500 overflow-hidden ${
             isLiveActive 
             ? 'bg-zinc-900 border-2 border-red-500/50 text-red-400' 
             : 'bg-purple-600 border-2 border-purple-400 text-white shadow-[0_0_40px_rgba(168,85,247,0.4)] hover:shadow-[0_0_60px_rgba(168,85,247,0.6)] hover:bg-purple-500'
           }`}
         >
-          {/* Animated Background Pulse */}
           {!isLiveActive && (
             <div className="absolute inset-0 bg-white/10 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out" />
           )}
@@ -118,7 +126,6 @@ const Hero: React.FC<HeroProps> = ({ data, onLog, isLiveActive, onToggleLive }) 
             {isLiveActive ? 'TERMINATE_SOMA_UPLINK' : 'TALK_TO_SOMA_ASSISTANT'}
           </span>
           
-          {/* Corner accents for the sexy feel */}
           <div className="absolute top-0 left-0 w-1 h-1 bg-white/40" />
           <div className="absolute bottom-0 right-0 w-1 h-1 bg-white/40" />
         </button>
@@ -134,7 +141,7 @@ const Hero: React.FC<HeroProps> = ({ data, onLog, isLiveActive, onToggleLive }) 
               </span>
               <div className="h-px flex-1 bg-purple-500/20" />
            </div>
-           <p className="text-[9px] text-zinc-500 tracking-widest uppercase">
+           <p className="text-[9px] text-zinc-500 tracking-widest uppercase font-bold">
              SECURE YOUR BIOLOGICAL NODE IN THE NEXT COHORT
            </p>
         </div>
@@ -147,7 +154,6 @@ const Hero: React.FC<HeroProps> = ({ data, onLog, isLiveActive, onToggleLive }) 
             'border-purple-500/40 bg-purple-500/5'
           } group`}
         >
-          {/* Subtle Scanline for Input */}
           <div className="absolute inset-0 pointer-events-none opacity-20 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(168,85,247,0.25)_50%)] bg-[length:100%_4px]" />
           
           <div className="relative flex-1 flex items-center">
