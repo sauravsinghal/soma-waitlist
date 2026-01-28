@@ -9,25 +9,54 @@ interface HeroProps {
 
 const Hero: React.FC<HeroProps> = ({ data, onLog }) => {
   const [email, setEmail] = useState('');
-  const [status, setStatus] = useState<'IDLE' | 'PROCESSING' | 'SUCCESS'>('IDLE');
+  const [status, setStatus] = useState<'IDLE' | 'PROCESSING' | 'SUCCESS' | 'ERROR'>('IDLE');
 
-  const handleExecute = async () => {
+  const handleExecute = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+
     if (!email || !email.includes('@')) {
       onLog('ERROR', 'AUTH', 'INVALID_CREDENTIAL_FORMAT');
+      setStatus('ERROR');
+      setTimeout(() => setStatus('IDLE'), 2000);
       return;
     }
 
     setStatus('PROCESSING');
-    onLog('INFO', 'TRANS', 'INITIATING_ENCRYPTED_UPLINK...');
+    onLog('INFO', 'UPLINK', 'ESTABLISHING_ENCRYPTED_CONNECTION...');
     
-    // Simulate API Call
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    onLog('OK', 'DATABASE', `ACCESS_GRANTED_TO_${email.toUpperCase()}`);
-    setStatus('SUCCESS');
-    setEmail('');
-    
-    setTimeout(() => setStatus('IDLE'), 5000);
+    try {
+      // REPLACE THE URL BELOW WITH YOUR ACTUAL MAKE.COM WEBHOOK URL
+      const WEBHOOK_URL = "https://hook.eu1.make.com/29xiyrfqm8cqq5r2braoc5e0vg40fsa1";
+      
+      const response = await fetch(WEBHOOK_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ 
+          email: email,
+          timestamp: new Date().toISOString(),
+          metadata: {
+            coreTemp: data.coreTemp,
+            heartRate: data.heartRate,
+            origin: "SOMA_v0.1_DASHBOARD"
+          }
+        }),
+      });
+
+      if (response.ok) {
+        onLog('OK', 'DATABASE', `ACCESS_GRANTED_TO_${email.toUpperCase()}`);
+        setStatus('SUCCESS');
+        setEmail('');
+        setTimeout(() => setStatus('IDLE'), 5000);
+      } else {
+        throw new Error("SERVER_REJECTED_UPLINK");
+      }
+    } catch (err) {
+      onLog('ERROR', 'NETWORK', 'UPLINK_TRANSMISSION_FAILURE');
+      setStatus('ERROR');
+      setTimeout(() => setStatus('IDLE'), 3000);
+    }
   };
 
   return (
@@ -67,30 +96,38 @@ const Hero: React.FC<HeroProps> = ({ data, onLog }) => {
         </p>
       </div>
 
-      <div className={`max-w-md mx-auto flex items-center border transition-all duration-500 ${status === 'SUCCESS' ? 'border-green-500 shadow-[0_0_15px_rgba(34,197,94,0.3)]' : 'border-purple-500/30'} group`}>
+      <form 
+        onSubmit={handleExecute}
+        className={`max-w-md mx-auto flex items-center border transition-all duration-500 ${
+          status === 'SUCCESS' ? 'border-green-500 shadow-[0_0_15px_rgba(34,197,94,0.3)]' : 
+          status === 'ERROR' ? 'border-red-500 shadow-[0_0_15px_rgba(239,68,68,0.3)]' : 
+          'border-purple-500/30'
+        } group`}
+      >
         <span className="px-4 text-xs text-purple-500/60 font-bold tracking-tighter">
-          &gt; {status === 'SUCCESS' ? 'LOGGED' : 'EMAIL'}:
+          &gt; {status === 'SUCCESS' ? 'LOGGED' : status === 'ERROR' ? 'FAIL' : 'EMAIL'}:
         </span>
         <input 
           type="email" 
           value={email}
-          disabled={status !== 'IDLE'}
+          disabled={status !== 'IDLE' && status !== 'ERROR'}
           onChange={(e) => setEmail(e.target.value)}
           placeholder={status === 'SUCCESS' ? "REQUEST_TRANSMITTED" : "_______________________"}
           className="bg-transparent flex-1 py-4 text-xs outline-none focus:placeholder-transparent transition-all disabled:opacity-50"
         />
         <button 
-          onClick={handleExecute}
-          disabled={status !== 'IDLE'}
+          type="submit"
+          disabled={status === 'PROCESSING'}
           className={`px-8 py-4 text-[10px] font-bold tracking-[0.2em] transition-all border-l border-purple-500/30 ${
             status === 'PROCESSING' ? 'bg-zinc-800 animate-pulse cursor-wait' :
             status === 'SUCCESS' ? 'bg-green-600 text-white border-green-500' :
+            status === 'ERROR' ? 'bg-red-900/50 text-white border-red-500' :
             'bg-purple-600/10 hover:bg-purple-600 text-white'
           }`}
         >
           {status === 'IDLE' ? 'EXECUTE' : status}
         </button>
-      </div>
+      </form>
 
       <div className="flex justify-center gap-8 text-[9px] text-zinc-600 tracking-widest uppercase">
         <span>[GURGAON]</span>
