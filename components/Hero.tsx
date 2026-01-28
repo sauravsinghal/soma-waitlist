@@ -5,9 +5,11 @@ import { MetabolicState } from '../types';
 interface HeroProps {
   data: MetabolicState;
   onLog: (type: 'ERROR' | 'OK' | 'INFO', module: string, message: string) => void;
+  isLiveActive: boolean;
+  onToggleLive: () => void;
 }
 
-const Hero: React.FC<HeroProps> = ({ data, onLog }) => {
+const Hero: React.FC<HeroProps> = ({ data, onLog, isLiveActive, onToggleLive }) => {
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState<'IDLE' | 'PROCESSING' | 'SUCCESS' | 'ERROR'>('IDLE');
 
@@ -26,7 +28,7 @@ const Hero: React.FC<HeroProps> = ({ data, onLog }) => {
     
     try {
       // REPLACE THE URL BELOW WITH YOUR ACTUAL MAKE.COM WEBHOOK URL
-      const WEBHOOK_URL = "https://hook.eu1.make.com/29xiyrfqm8cqq5r2braoc5e0vg40fsa1";
+      const WEBHOOK_URL = "https://hook.eu1.make.com/YOUR_WEBHOOK_ID_HERE";
       
       const response = await fetch(WEBHOOK_URL, {
         method: "POST",
@@ -96,40 +98,96 @@ const Hero: React.FC<HeroProps> = ({ data, onLog }) => {
         </p>
       </div>
 
-      <form 
-        onSubmit={handleExecute}
-        className={`max-w-md mx-auto flex items-center border transition-all duration-500 ${
-          status === 'SUCCESS' ? 'border-green-500 shadow-[0_0_15px_rgba(34,197,94,0.3)]' : 
-          status === 'ERROR' ? 'border-red-500 shadow-[0_0_15px_rgba(239,68,68,0.3)]' : 
-          'border-purple-500/30'
-        } group`}
-      >
-        <span className="px-4 text-xs text-purple-500/60 font-bold tracking-tighter">
-          &gt; {status === 'SUCCESS' ? 'LOGGED' : status === 'ERROR' ? 'FAIL' : 'EMAIL'}:
-        </span>
-        <input 
-          type="email" 
-          value={email}
-          disabled={status !== 'IDLE' && status !== 'ERROR'}
-          onChange={(e) => setEmail(e.target.value)}
-          placeholder={status === 'SUCCESS' ? "REQUEST_TRANSMITTED" : "_______________________"}
-          className="bg-transparent flex-1 py-4 text-xs outline-none focus:placeholder-transparent transition-all disabled:opacity-50"
-        />
+      {/* Sexy Call to Action Button */}
+      <div className="max-w-md mx-auto pt-4">
         <button 
-          type="submit"
-          disabled={status === 'PROCESSING'}
-          className={`px-8 py-4 text-[10px] font-bold tracking-[0.2em] transition-all border-l border-purple-500/30 ${
-            status === 'PROCESSING' ? 'bg-zinc-800 animate-pulse cursor-wait' :
-            status === 'SUCCESS' ? 'bg-green-600 text-white border-green-500' :
-            status === 'ERROR' ? 'bg-red-900/50 text-white border-red-500' :
-            'bg-purple-600/10 hover:bg-purple-600 text-white'
+          onClick={onToggleLive}
+          className={`w-full group relative flex items-center justify-center gap-4 px-8 py-6 text-sm font-bold tracking-[0.3em] uppercase transition-all duration-500 overflow-hidden ${
+            isLiveActive 
+            ? 'bg-zinc-900 border-2 border-red-500/50 text-red-400' 
+            : 'bg-purple-600 border-2 border-purple-400 text-white shadow-[0_0_40px_rgba(168,85,247,0.4)] hover:shadow-[0_0_60px_rgba(168,85,247,0.6)] hover:bg-purple-500'
           }`}
         >
-          {status === 'IDLE' ? 'EXECUTE' : status}
+          {/* Animated Background Pulse */}
+          {!isLiveActive && (
+            <div className="absolute inset-0 bg-white/10 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out" />
+          )}
+          
+          <span className="relative flex items-center gap-3">
+            <span className={`w-2 h-2 rounded-full ${isLiveActive ? 'bg-red-500 animate-pulse' : 'bg-white'}`} />
+            {isLiveActive ? 'TERMINATE_SOMA_UPLINK' : 'TALK_TO_SOMA_ASSISTANT'}
+          </span>
+          
+          {/* Corner accents for the sexy feel */}
+          <div className="absolute top-0 left-0 w-1 h-1 bg-white/40" />
+          <div className="absolute bottom-0 right-0 w-1 h-1 bg-white/40" />
         </button>
-      </form>
+      </div>
 
-      <div className="flex justify-center gap-8 text-[9px] text-zinc-600 tracking-widest uppercase">
+      {/* Enhanced Waitlist Section */}
+      <div className="max-w-md mx-auto space-y-6 pt-12">
+        <div className="flex flex-col items-center gap-2">
+           <div className="flex items-center gap-3 w-full">
+              <div className="h-px flex-1 bg-purple-500/20" />
+              <span className="text-[10px] font-bold tracking-[0.4em] text-purple-400 uppercase whitespace-nowrap">
+                WAITLIST_PROTOCOL_v0.1
+              </span>
+              <div className="h-px flex-1 bg-purple-500/20" />
+           </div>
+           <p className="text-[9px] text-zinc-500 tracking-widest uppercase">
+             SECURE YOUR BIOLOGICAL NODE IN THE NEXT COHORT
+           </p>
+        </div>
+
+        <form 
+          onSubmit={handleExecute}
+          className={`relative flex items-center border-2 transition-all duration-500 overflow-hidden ${
+            status === 'SUCCESS' ? 'border-green-500 shadow-[0_0_25px_rgba(34,197,94,0.4)]' : 
+            status === 'ERROR' ? 'border-red-500 shadow-[0_0_25px_rgba(239,68,68,0.4)]' : 
+            'border-purple-500/40 bg-purple-500/5'
+          } group`}
+        >
+          {/* Subtle Scanline for Input */}
+          <div className="absolute inset-0 pointer-events-none opacity-20 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(168,85,247,0.25)_50%)] bg-[length:100%_4px]" />
+          
+          <div className="relative flex-1 flex items-center">
+            <span className="pl-4 pr-2 text-xs text-purple-500 font-bold animate-pulse">
+              &gt;
+            </span>
+            <input 
+              type="email" 
+              value={email}
+              disabled={status !== 'IDLE' && status !== 'ERROR'}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder={status === 'SUCCESS' ? "NODE_REGISTERED" : "UPLINK_IDENTITY_EMAIL"}
+              className="bg-transparent flex-1 py-5 text-sm outline-none placeholder:text-zinc-600 focus:placeholder-transparent transition-all disabled:opacity-50 text-white font-medium"
+            />
+          </div>
+
+          <button 
+            type="submit"
+            disabled={status === 'PROCESSING'}
+            className={`relative px-10 py-5 text-xs font-black tracking-[0.25em] transition-all border-l-2 border-purple-500/40 ${
+              status === 'PROCESSING' ? 'bg-zinc-800 animate-pulse cursor-wait' :
+              status === 'SUCCESS' ? 'bg-green-600 text-white border-green-500' :
+              status === 'ERROR' ? 'bg-red-900/50 text-white border-red-500' :
+              'bg-purple-600 hover:bg-purple-400 text-white shadow-[inset_0_0_20px_rgba(255,255,255,0.2)]'
+            }`}
+          >
+            {status === 'IDLE' ? 'SECURE_ACCESS' : status}
+          </button>
+        </form>
+
+        <div className="flex justify-between items-center px-1">
+          <div className="flex items-center gap-2">
+            <span className="w-1.5 h-1.5 rounded-full bg-purple-500 animate-ping" />
+            <span className="text-[9px] text-zinc-500 tracking-tighter font-bold uppercase">94%_CAPACITY_REACHED</span>
+          </div>
+          <span className="text-[9px] text-purple-400/60 font-mono italic">PRIORITY_QUEUE_ACTIVE</span>
+        </div>
+      </div>
+
+      <div className="flex justify-center gap-8 text-[9px] text-zinc-600 tracking-widest uppercase pt-12">
         <span>[GURGAON]</span>
         <span>[BANGALORE]</span>
         <span>[MUMBAI]</span>
