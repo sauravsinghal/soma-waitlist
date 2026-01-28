@@ -54,7 +54,12 @@ const App: React.FC = () => {
       <Header />
       
       <main className="max-w-6xl mx-auto px-6 py-12 space-y-24">
-        <Hero data={metabolicData} onLog={addLog} />
+        <Hero 
+          data={metabolicData} 
+          onLog={addLog} 
+          isLiveActive={isLiveActive} 
+          onToggleLive={() => setIsLiveActive(!isLiveActive)} 
+        />
         
         <div className="grid md:grid-cols-2 gap-12">
           <SystemLogs logs={logs} />
@@ -63,19 +68,6 @@ const App: React.FC = () => {
         <PersonnelClasses />
         
         <ExecutionCycle />
-
-        <div className="flex justify-center pt-12">
-           <button 
-             onClick={() => setIsLiveActive(!isLiveActive)}
-             className={`px-8 py-4 border-2 transition-all duration-300 tracking-[0.2em] font-bold text-sm ${
-               isLiveActive 
-               ? 'bg-purple-600 border-purple-400 text-white shadow-[0_0_20px_rgba(168,85,247,0.5)]' 
-               : 'bg-transparent border-purple-500/50 text-purple-400 hover:border-purple-400 hover:text-purple-300'
-             }`}
-           >
-             {isLiveActive ? 'TERMINATE_LIVE_SESSION' : 'INITIATE_LIVE_ADVISOR'}
-           </button>
-        </div>
 
         {isLiveActive && (
           <div className="fixed bottom-8 right-8 z-50">
