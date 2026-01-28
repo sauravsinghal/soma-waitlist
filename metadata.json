@@ -1,0 +1,7 @@
+{
+  "name": "SOMA Metabolic OS",
+  "description": "A high-performance biological intelligence dashboard and metabolic optimization system for elite performance.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}
