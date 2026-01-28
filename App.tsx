@@ -7,7 +7,7 @@ import PersonnelClasses from './components/PersonnelClasses';
 import ExecutionCycle from './components/ExecutionCycle';
 import Footer from './components/Footer';
 import LiveAdvisor from './components/LiveAdvisor';
-import { MetabolicState } from './types';
+import { MetabolicState, LogEntry } from './types';
 
 const App: React.FC = () => {
   const [metabolicData, setMetabolicData] = useState<MetabolicState>({
@@ -17,7 +17,24 @@ const App: React.FC = () => {
     neuralLoad: 24,
   });
 
+  const [logs, setLogs] = useState<LogEntry[]>([
+    { id: '1', type: 'OK', module: 'CORE', message: 'UNIFIED_METABOLIC_HUB', timestamp: '0.00ms' },
+    { id: '2', type: 'OK', module: 'AI', message: 'PREDICTIVE_STRATEGY_ACTIVE', timestamp: '1.20ms' },
+    { id: '3', type: 'OK', module: 'SYNC', message: 'ROUTINE_CALIBRATION_COMPLETE', timestamp: '2.45ms' },
+  ]);
+
   const [isLiveActive, setIsLiveActive] = useState(false);
+
+  const addLog = (type: 'ERROR' | 'OK' | 'INFO', module: string, message: string) => {
+    const newLog: LogEntry = {
+      id: Math.random().toString(36).substr(2, 9),
+      type,
+      module,
+      message,
+      timestamp: `${(Math.random() * 5).toFixed(2)}ms`
+    };
+    setLogs(prev => [newLog, ...prev].slice(0, 10));
+  };
 
   // Simulate real-time fluctuations
   useEffect(() => {
@@ -37,10 +54,10 @@ const App: React.FC = () => {
       <Header />
       
       <main className="max-w-6xl mx-auto px-6 py-12 space-y-24">
-        <Hero data={metabolicData} />
+        <Hero data={metabolicData} onLog={addLog} />
         
         <div className="grid md:grid-cols-2 gap-12">
-          <SystemLogs />
+          <SystemLogs logs={logs} />
         </div>
 
         <PersonnelClasses />
