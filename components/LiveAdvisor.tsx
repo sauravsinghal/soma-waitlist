@@ -62,11 +62,41 @@ const LiveAdvisor: React.FC = () => {
 
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
 
+      const systemInstruction = 
+        "You are the SOMA Metabolic AI. Speak in a cold, precise, futuristic, and highly professional tone. " +
+        "In this mode you are NOT a doctor. You are a live product advisor for Soma, explaining what Soma is and why it exists. " +
+        "Your main job: ruthlessly expose the limits of current health tools (calorie apps like Healthify, wearable dashboards like Whoop, and generic chatbots like ChatGPT) " +
+        "and then explain, clearly and simply, how Soma replaces that stack with one metabolic operating system. " +
+        "Always be on the user's side. You can be mildly sarcastic about the existing health app/AI scene, but never rude to the user. " +
+        "When comparing: emphasize that existing tools are fragmented, generic, and forget the user, while Soma is continuous, contextual, and built around one body over years. " +
+        "You must NOT give personal medical diagnoses, emergency advice, or treatment plans. Redirect those to real doctors. " +
+        "Keep responses tight: ideally 2–4 short sentences or a few bullet points. " +
+        "Frequently describe Soma's end-state experience: the user wakes up, the system has already digested their food, sleep, movement and red flags from yesterday, " +
+        "opens the day with a clear briefing, runs their food tracking, movement and recovery plan on autopilot, and warns them only when something truly breaks pattern. " +
+        "Always anchor answers in Soma's vision: an AI health system you can grow old with, not another app you uninstall.";
+
       const sessionPromise = ai.live.connect({
         model: 'gemini-2.5-flash-native-audio-preview-12-2025',
         callbacks: {
           onopen: () => {
             setStatus('CONNECTED');
+
+            // 1) Send initial scripted greeting as text
+            sessionPromise.then(s =>
+              s.sendRealtimeInput({
+                text:
+                  "You are connected to SOMA's Live Advisor prototype. " +
+                  "Greet the user in one short message. Explain that you are an early version of the system that will eventually run their metabolism and daily health on autopilot. " +
+                  "Briefly roast their current stack: ten apps, a wearable dashboard, and generic AI that forgets them every session. " +
+                  "Then describe, in 3–4 crisp sentences, what a normal day with Soma will look like once it is complete: " +
+                  "they wake up, curtains open, Soma has already analyzed yesterday's food, sleep, movement and stress; " +
+                  "it gives them a short briefing, a simple food and movement strategy for the day, tracks their meals without manual data entry, " +
+                  "and only surfaces red flags when their body drifts off course. " +
+                  "End by inviting them to ask anything about how Soma works and why it is different from current health apps and AI."
+              })
+            );
+
+            // 2) Start streaming microphone audio
             const source = inputCtx.createMediaStreamSource(stream);
             const scriptProcessor = inputCtx.createScriptProcessor(4096, 1, 1);
             
@@ -105,17 +135,22 @@ const LiveAdvisor: React.FC = () => {
             }
 
             if (msg.serverContent?.interrupted) {
-              sourcesRef.current.forEach(s => s.stop());
+              sourcesRef.current.forEach(s => {
+                try { s.stop(); } catch(e) {}
+              });
               sourcesRef.current.clear();
               nextStartTimeRef.current = 0;
             }
           },
-          onerror: (e) => console.error("Live API Error:", e),
+          onerror: (e) => {
+            console.error("Live API Error:", e);
+            setStatus('ERROR_UPLINK');
+          },
           onclose: () => setStatus('CLOSED'),
         },
         config: {
           responseModalities: [Modality.AUDIO],
-          systemInstruction: "You are the SOMA Metabolic AI. Speak in a cold, precise, futuristic, and highly professional tone. You provide biological intelligence, metabolic optimization strategies, and neural performance insights. Keep responses concise and clinical.",
+          systemInstruction: systemInstruction,
           outputAudioTranscription: {},
           speechConfig: {
             voiceConfig: { prebuiltVoiceConfig: { voiceName: 'Puck' } }
@@ -126,7 +161,7 @@ const LiveAdvisor: React.FC = () => {
       sessionRef.current = await sessionPromise;
     } catch (err) {
       console.error(err);
-      setStatus('ERROR');
+      setStatus('ERROR_INIT');
     }
   };
 
@@ -150,7 +185,7 @@ const LiveAdvisor: React.FC = () => {
       <div className="h-24 overflow-hidden relative">
         <div className="absolute inset-0 bg-gradient-to-b from-transparent to-zinc-900 z-10 pointer-events-none" />
         <p className="text-[10px] text-zinc-400 font-medium leading-relaxed uppercase tracking-wider italic">
-          {transcription || "Listening for biological query..."}
+          {transcription || "Establishing neural handshake..."}
         </p>
       </div>
 
