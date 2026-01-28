@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { MetabolicState } from '../types';
 
 interface HeroProps {
@@ -12,18 +12,36 @@ interface HeroProps {
 const Hero: React.FC<HeroProps> = ({ data, onLog, isLiveActive, onToggleLive }) => {
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState<'IDLE' | 'PROCESSING' | 'SUCCESS' | 'ERROR'>('IDLE');
+  
+  // Audio refs for preloading
+  const hoverSoundRef = useRef<string>('https://assets.mixkit.co/active_storage/sfx/2558/2558-preview.mp3');
+  const clickSoundRef = useRef<string>('https://assets.mixkit.co/active_storage/sfx/2560/2560-preview.mp3');
 
   const playHoverSound = () => {
-    // Futuristic digital blip sound
-    const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3');
-    audio.volume = 0.15;
-    audio.play().catch(() => {
-      // Browsers often block auto-play audio unless user has interacted
+    // Create a fresh instance for immediate playback and overlapping support
+    const sound = new Audio(hoverSoundRef.current);
+    sound.volume = 0.2;
+    // Set a higher playback rate for that "scratchy" futuristic digital aesthetic
+    sound.playbackRate = 1.6;
+    sound.play().catch(() => {
+      // Browser prevents audio playback until first interaction
     });
+  };
+
+  const playClickSound = () => {
+    const sound = new Audio(clickSoundRef.current);
+    sound.volume = 0.3;
+    sound.play().catch(() => {});
+  };
+
+  const handleActionClick = () => {
+    playClickSound();
+    onToggleLive();
   };
 
   const handleExecute = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
+    playClickSound();
 
     if (!email || !email.includes('@')) {
       onLog('ERROR', 'AUTH', 'INVALID_CREDENTIAL_FORMAT');
@@ -74,7 +92,7 @@ const Hero: React.FC<HeroProps> = ({ data, onLog, isLiveActive, onToggleLive }) 
       <div className="relative inline-block mt-8">
         <div className="absolute -top-12 left-1/2 -translate-x-1/2 text-zinc-600">
            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 2c-4.418 0-8 3.582-8 8v2c0 1.657 1.343 3 3 3v2h2v-2h2v2h2v-2h2v2h2v-2c1.657 0 3-1.343 3-3v-2c0-4.418-3.582-8-8-8zm-3 8h-2v-2h2v2zm6 0h-2v-2h2v2z"/>
+              <path d="M12 2c-4.418 0-8 3.582-8 8v2c0 1.657 1.343 3 3 3v2h2v-2h2v2h2v-2h2v2h2v-2h2v2h2v-2c1.657 0 3-1.343 3-3v-2c0-4.418-3.582-8-8-8zm-3 8h-2v-2h2v2zm6 0h-2v-2h2v2z"/>
            </svg>
         </div>
 
@@ -84,7 +102,7 @@ const Hero: React.FC<HeroProps> = ({ data, onLog, isLiveActive, onToggleLive }) 
           <div className="absolute bottom-0 left-0 w-2 h-2 bg-purple-500/20" />
           <div className="absolute bottom-0 right-0 w-2 h-2 bg-purple-500" />
           
-          <div className="text-xs text-zinc-500 mb-2 uppercase tracking-tighter">CORE_TEMP</div>
+          <div className="text-xs text-zinc-500 mb-2 uppercase tracking-tighter font-bold">CORE_TEMP</div>
           <div className="text-5xl font-bold tracking-tight flicker">
             {data.coreTemp}<span className="text-purple-500">°C</span>
           </div>
@@ -101,15 +119,15 @@ const Hero: React.FC<HeroProps> = ({ data, onLog, isLiveActive, onToggleLive }) 
       </div>
 
       <div className="max-w-xl mx-auto">
-        <p className="text-zinc-500 text-sm leading-relaxed tracking-wide">
+        <p className="text-zinc-500 text-sm leading-relaxed tracking-wide font-medium">
           &gt; Real-time biological intelligence integrated into your daily stack.
         </p>
       </div>
 
-      {/* Sexy Call to Action Button */}
+      {/* Main CTA Button with Updated Scratchy Glitch Sound */}
       <div className="max-w-md mx-auto pt-4">
         <button 
-          onClick={onToggleLive}
+          onClick={handleActionClick}
           onMouseEnter={playHoverSound}
           className={`w-full group relative flex items-center justify-center gap-4 px-8 py-6 text-sm font-bold tracking-[0.3em] uppercase transition-all duration-500 overflow-hidden ${
             isLiveActive 
@@ -131,8 +149,13 @@ const Hero: React.FC<HeroProps> = ({ data, onLog, isLiveActive, onToggleLive }) 
         </button>
       </div>
 
+      {/* Thin Purple Divider Line */}
+      <div className="max-w-6xl mx-auto px-6 py-4">
+        <div className="h-px w-full bg-purple-500/20" />
+      </div>
+
       {/* Enhanced Waitlist Section */}
-      <div className="max-w-md mx-auto space-y-6 pt-12">
+      <div className="max-w-md mx-auto space-y-6 pt-0">
         <div className="flex flex-col items-center gap-2">
            <div className="flex items-center gap-3 w-full">
               <div className="h-px flex-1 bg-purple-500/20" />
@@ -189,11 +212,11 @@ const Hero: React.FC<HeroProps> = ({ data, onLog, isLiveActive, onToggleLive }) 
             <span className="w-1.5 h-1.5 rounded-full bg-purple-500 animate-ping" />
             <span className="text-[9px] text-zinc-500 tracking-tighter font-bold uppercase">94%_CAPACITY_REACHED</span>
           </div>
-          <span className="text-[9px] text-purple-400/60 font-mono italic">PRIORITY_QUEUE_ACTIVE</span>
+          <span className="text-[9px] text-purple-400/60 font-mono italic font-bold">PRIORITY_QUEUE_ACTIVE</span>
         </div>
       </div>
 
-      <div className="flex justify-center gap-8 text-[9px] text-zinc-600 tracking-widest uppercase pt-12">
+      <div className="flex justify-center gap-8 text-[9px] text-zinc-600 tracking-widest uppercase pt-12 font-bold">
         <span>[GURGAON]</span>
         <span>[BANGALORE]</span>
         <span>[MUMBAI]</span>
