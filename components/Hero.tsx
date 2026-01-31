@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import { MetabolicState } from '../types';
 
 interface HeroProps {
@@ -7,30 +7,19 @@ interface HeroProps {
   onLog: (type: 'ERROR' | 'OK' | 'INFO', module: string, message: string) => void;
   isLiveActive: boolean;
   onToggleLive: () => void;
+  isAudioOn: boolean;
+  onToggleAudio: () => void;
 }
 
-const Hero: React.FC<HeroProps> = ({ data, onLog, isLiveActive, onToggleLive }) => {
+const Hero: React.FC<HeroProps> = ({ data, onLog, isLiveActive, onToggleLive, isAudioOn, onToggleAudio }) => {
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState<'IDLE' | 'PROCESSING' | 'SUCCESS' | 'ERROR'>('IDLE');
   
-  // Audio refs for preloading
-  const hoverSoundRef = useRef<string>('https://assets.mixkit.co/active_storage/sfx/2558/2558-preview.mp3');
   const clickSoundRef = useRef<string>('https://assets.mixkit.co/active_storage/sfx/2560/2560-preview.mp3');
-
-  const playHoverSound = () => {
-    // Create a fresh instance for immediate playback and overlapping support
-    const sound = new Audio(hoverSoundRef.current);
-    sound.volume = 0.2;
-    // Set a higher playback rate for that "scratchy" futuristic digital aesthetic
-    sound.playbackRate = 1.6;
-    sound.play().catch(() => {
-      // Browser prevents audio playback until first interaction
-    });
-  };
 
   const playClickSound = () => {
     const sound = new Audio(clickSoundRef.current);
-    sound.volume = 0.3;
+    sound.volume = 0.25;
     sound.play().catch(() => {});
   };
 
@@ -39,7 +28,12 @@ const Hero: React.FC<HeroProps> = ({ data, onLog, isLiveActive, onToggleLive }) 
     onToggleLive();
   };
 
-  const handleExecute = async (e?: React.FormEvent) => {
+  const handleAudioToggle = () => {
+    playClickSound();
+    onToggleAudio();
+  };
+
+  const handleExecute = (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     playClickSound();
 
@@ -51,44 +45,76 @@ const Hero: React.FC<HeroProps> = ({ data, onLog, isLiveActive, onToggleLive }) 
     }
 
     setStatus('PROCESSING');
-    onLog('INFO', 'UPLINK', 'ESTABLISHING_ENCRYPTED_CONNECTION...');
+    onLog('INFO', 'UPLINK', 'REDIRECTING_TO_SECURE_WAITLIST...');
     
-    try {
-      const WEBHOOK_URL = "https://hook.eu1.make.com/YOUR_WEBHOOK_ID_HERE";
-      
-      const response = await fetch(WEBHOOK_URL, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ 
-          email: email,
-          timestamp: new Date().toISOString(),
-          metadata: {
-            coreTemp: data.coreTemp,
-            heartRate: data.heartRate,
-            origin: "SOMA_v0.1_DASHBOARD"
-          }
-        }),
-      });
-
-      if (response.ok) {
-        onLog('OK', 'DATABASE', `ACCESS_GRANTED_TO_${email.toUpperCase()}`);
-        setStatus('SUCCESS');
-        setEmail('');
-        setTimeout(() => setStatus('IDLE'), 5000);
-      } else {
-        throw new Error("SERVER_REJECTED_UPLINK");
-      }
-    } catch (err) {
-      onLog('ERROR', 'NETWORK', 'UPLINK_TRANSMISSION_FAILURE');
-      setStatus('ERROR');
+    // As per screenshot request: "Upon clicking send to this URL"
+    setTimeout(() => {
+      window.open('https://soma-waitlist-05k5t90.public.builtwithrocket.new/', '_blank');
+      setStatus('SUCCESS');
+      setEmail('');
       setTimeout(() => setStatus('IDLE'), 3000);
-    }
+    }, 1000);
   };
 
   return (
-    <section className="text-center space-y-12">
+    <section className="text-center space-y-12 pt-8">
+      {/* High-Tech Immersion Control HUD */}
+      <div className="max-w-md mx-auto h-[120px] flex items-center justify-center relative">
+        {!isAudioOn ? (
+          <div className="space-y-6 flex flex-col items-center animate-in fade-in slide-in-from-top-4 duration-500">
+            <div className="text-[9px] text-zinc-600 tracking-[0.5em] uppercase font-black opacity-60">
+              ATMOSPHERIC_IMMERSION_CONTROL
+            </div>
+            
+            <button 
+              onClick={handleAudioToggle}
+              className="group relative px-10 py-4 bg-transparent border border-purple-500/30 overflow-hidden hover:border-purple-500 transition-all duration-300 shadow-[0_0_15px_rgba(168,85,247,0.1)] hover:shadow-[0_0_25px_rgba(168,85,247,0.2)]"
+            >
+              {/* Corner Accents */}
+              <div className="absolute top-0 left-0 w-1 h-1 bg-purple-500" />
+              <div className="absolute bottom-0 right-0 w-1 h-1 bg-purple-500" />
+              <div className="absolute inset-0 bg-purple-500/5 -translate-x-full group-hover:translate-x-0 transition-transform duration-500" />
+              
+              <span className="relative text-[10px] font-black tracking-[0.4em] text-purple-400 group-hover:text-white transition-colors">
+                [ACTIVATE_SOMA_AMBIENT]
+              </span>
+            </button>
+          </div>
+        ) : (
+          <div className="relative flex flex-col items-center justify-center animate-in zoom-in-95 fade-in duration-700 w-full">
+            {/* Spinning Holographic HUD elements */}
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+              <div className="w-32 h-32 border-t-2 border-l-2 border-purple-500/40 rounded-full animate-[spin_4s_linear_infinite]" />
+              <div className="w-28 h-28 border-b-2 border-r-2 border-purple-400/20 rounded-full animate-[spin_3s_linear_infinite_reverse]" />
+              <div className="w-24 h-24 border border-dashed border-purple-500/10 rounded-full animate-[ping_2s_infinite]" />
+            </div>
+
+            {/* Pulsing Core */}
+            <div className="relative mb-4">
+              <div className="w-4 h-4 bg-purple-500 rounded-full animate-pulse shadow-[0_0_20px_rgba(168,85,247,1)]" />
+            </div>
+
+            <div className="flex flex-col items-center gap-3">
+              <div className="text-[8px] font-black tracking-[0.6em] text-purple-500/60 uppercase animate-pulse">
+                UPLINK_SYNCED // IMMERSION_ON
+              </div>
+              
+              <button 
+                onClick={handleAudioToggle}
+                className="group relative px-6 py-2 border border-purple-500/40 bg-purple-500/10 hover:bg-red-500/10 hover:border-red-500/60 transition-all duration-300"
+              >
+                <div className="absolute -top-[1px] -left-[1px] w-1 h-1 bg-purple-500 group-hover:bg-red-500" />
+                <div className="absolute -bottom-[1px] -right-[1px] w-1 h-1 bg-purple-500 group-hover:bg-red-500" />
+                
+                <span className="text-[9px] font-black tracking-[0.4em] text-purple-400 group-hover:text-red-400 uppercase">
+                  [CEASE_TRANSMISSION]
+                </span>
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+
       <div className="relative inline-block mt-8">
         <div className="absolute -top-12 left-1/2 -translate-x-1/2 text-zinc-600">
            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
@@ -124,11 +150,9 @@ const Hero: React.FC<HeroProps> = ({ data, onLog, isLiveActive, onToggleLive }) 
         </p>
       </div>
 
-      {/* Main CTA Button with Updated Scratchy Glitch Sound */}
       <div className="max-w-md mx-auto pt-4">
         <button 
           onClick={handleActionClick}
-          onMouseEnter={playHoverSound}
           className={`w-full group relative flex items-center justify-center gap-4 px-8 py-6 text-sm font-bold tracking-[0.3em] uppercase transition-all duration-500 overflow-hidden ${
             isLiveActive 
             ? 'bg-zinc-900 border-2 border-red-500/50 text-red-400' 
@@ -149,12 +173,10 @@ const Hero: React.FC<HeroProps> = ({ data, onLog, isLiveActive, onToggleLive }) 
         </button>
       </div>
 
-      {/* Thin Purple Divider Line */}
       <div className="max-w-6xl mx-auto px-6 py-4">
         <div className="h-px w-full bg-purple-500/20" />
       </div>
 
-      {/* Enhanced Waitlist Section */}
       <div className="max-w-md mx-auto space-y-6 pt-0">
         <div className="flex flex-col items-center gap-2">
            <div className="flex items-center gap-3 w-full">
@@ -179,7 +201,7 @@ const Hero: React.FC<HeroProps> = ({ data, onLog, isLiveActive, onToggleLive }) 
         >
           <div className="absolute inset-0 pointer-events-none opacity-20 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(168,85,247,0.25)_50%)] bg-[length:100%_4px]" />
           
-          <div className="relative flex-1 flex items-center">
+          <div className="relative flex-1 flex-row items-center flex">
             <span className="pl-4 pr-2 text-xs text-purple-500 font-bold animate-pulse">
               &gt;
             </span>

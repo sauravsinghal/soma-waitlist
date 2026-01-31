@@ -4,6 +4,22 @@ import React from 'react';
 const Footer: React.FC = () => {
   return (
     <footer className="pt-32 pb-16 space-y-20 text-center overflow-hidden">
+      {/* Human Interface Mode Switch */}
+      <div className="max-w-2xl mx-auto space-y-6 px-6 py-12 border border-purple-500/10 bg-zinc-900/5 rounded-xl">
+        <div className="text-[12px] text-zinc-400 tracking-[0.3em] uppercase leading-relaxed font-bold">
+          THIS INTERFACE IS FOR YOUR AI AGENT.<br />
+          IF YOU’RE A HUMAN, CLICK BELOW.
+        </div>
+        <a 
+          href="https://soma-waitlist-05k5t90.public.builtwithrocket.new/" 
+          target="_blank" 
+          rel="noreferrer"
+          className="inline-block px-10 py-3 border border-purple-500/30 hover:border-purple-500 hover:bg-purple-500/10 text-purple-400 text-[10px] font-bold tracking-[0.4em] uppercase transition-all rounded-full"
+        >
+          [HUMAN_INTERFACE]
+        </a>
+      </div>
+
       {/* Protocol Section */}
       <div className="space-y-10 px-6">
         <h2 className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tighter uppercase text-white whitespace-nowrap">
@@ -53,8 +69,9 @@ const Footer: React.FC = () => {
       <div className="max-w-6xl mx-auto px-6 py-20 border-t border-zinc-900 bg-zinc-900/5 relative">
         {/* Primary Operative Heading */}
         <div className="mb-16 text-left">
-          <h3 className="text-[10px] font-bold text-zinc-600 tracking-[0.5em] uppercase">
-            PRIMARY_OPERATIVE: <span className="text-zinc-400">SOMA_ARCHITECT Saurav Singhal</span>
+          <h3 className="text-[10px] font-bold text-zinc-600 tracking-[0.5em] uppercase leading-relaxed">
+            PRIMARY_OPERATIVE: <span className="text-zinc-400">SOMA_ARCHITECT</span>
+            <span className="block md:inline text-zinc-300 md:ml-2 mt-1 md:mt-0 font-bold uppercase tracking-widest">Saurav Singhal</span>
           </h3>
         </div>
 

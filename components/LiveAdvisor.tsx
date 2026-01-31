@@ -51,12 +51,10 @@ const LiveAdvisor: React.FC = () => {
 
   const startSession = async () => {
     try {
-// Vite exposes env vars via import.meta.env and only if prefixed with VITE_
-const apiKey = import.meta.env.VITE_GEMINI_API_KEY as string | undefined;
-if (!apiKey) throw new Error("API Key missing");
+      const apiKey = process.env.API_KEY;
+      if (!apiKey) throw new Error("API Key missing");
 
-const ai = new GoogleGenAI({ apiKey });
-
+      const ai = new GoogleGenAI({ apiKey });
       
       const inputCtx = new (window.AudioContext || (window as any).webkitAudioContext)({ sampleRate: 16000 });
       const outputCtx = new (window.AudioContext || (window as any).webkitAudioContext)({ sampleRate: 24000 });
