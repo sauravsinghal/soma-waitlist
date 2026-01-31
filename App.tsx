@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Header from './components/Header';
 import Hero from './components/Hero';
 import SystemLogs from './components/SystemLogs';
@@ -24,6 +24,44 @@ const App: React.FC = () => {
   ]);
 
   const [isLiveActive, setIsLiveActive] = useState(false);
+  const [isAudioOn, setIsAudioOn] = useState(false);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  // Initialize audio with the source mentioned in the chatbox
+  useEffect(() => {
+    const audio = new Audio('https://cdn.pixabay.com/audio/2026/01/27/audio_5945848d7b.mp3');
+    audio.loop = true;
+    audio.volume = 0.5;
+    audio.crossOrigin = "anonymous";
+    audioRef.current = audio;
+
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current = null;
+      }
+    };
+  }, []);
+
+  const toggleAudio = () => {
+    if (!audioRef.current) return;
+
+    if (isAudioOn) {
+      audioRef.current.pause();
+      setIsAudioOn(false);
+    } else {
+      audioRef.current.play()
+        .then(() => {
+          setIsAudioOn(true);
+        })
+        .catch(error => {
+          console.error("Audio playback failed:", error);
+          // Fallback refresh
+          audioRef.current?.load();
+          audioRef.current?.play().then(() => setIsAudioOn(true));
+        });
+    }
+  };
 
   const addLog = (type: 'ERROR' | 'OK' | 'INFO', module: string, message: string) => {
     const newLog: LogEntry = {
@@ -36,7 +74,6 @@ const App: React.FC = () => {
     setLogs(prev => [newLog, ...prev].slice(0, 10));
   };
 
-  // Simulate real-time fluctuations
   useEffect(() => {
     const interval = setInterval(() => {
       setMetabolicData(prev => ({
@@ -58,7 +95,9 @@ const App: React.FC = () => {
           data={metabolicData} 
           onLog={addLog} 
           isLiveActive={isLiveActive} 
-          onToggleLive={() => setIsLiveActive(!isLiveActive)} 
+          onToggleLive={() => setIsLiveActive(!isLiveActive)}
+          isAudioOn={isAudioOn}
+          onToggleAudio={toggleAudio}
         />
         
         <div className="grid md:grid-cols-2 gap-12">
