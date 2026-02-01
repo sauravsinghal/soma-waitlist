@@ -15,10 +15,10 @@ const Hero: React.FC<HeroProps> = ({ data, onLog, isLiveActive, onToggleLive, is
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState<'IDLE' | 'PROCESSING' | 'SUCCESS' | 'ERROR'>('IDLE');
   
-  const clickSoundRef = useRef<string>('https://assets.mixkit.co/active_storage/sfx/2560/2560-preview.mp3');
+  const clickSfx = 'https://assets.mixkit.co/active_storage/sfx/2560/2560-preview.mp3';
 
   const playClickSound = () => {
-    const sound = new Audio(clickSoundRef.current);
+    const sound = new Audio(clickSfx);
     sound.volume = 0.25;
     sound.play().catch(() => {});
   };
@@ -33,7 +33,7 @@ const Hero: React.FC<HeroProps> = ({ data, onLog, isLiveActive, onToggleLive, is
     onToggleAudio();
   };
 
-  const handleExecute = (e?: React.FormEvent) => {
+  const handleExecute = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     playClickSound();
 
@@ -45,15 +45,37 @@ const Hero: React.FC<HeroProps> = ({ data, onLog, isLiveActive, onToggleLive, is
     }
 
     setStatus('PROCESSING');
-    onLog('INFO', 'UPLINK', 'REDIRECTING_TO_SECURE_WAITLIST...');
+    onLog('INFO', 'UPLINK', 'TRANSMITTING_BIOLOGICAL_IDENTITY...');
     
-    // As per screenshot request: "Upon clicking send to this URL"
-    setTimeout(() => {
-      window.open('https://soma-waitlist-05k5t90.public.builtwithrocket.new/', '_blank');
-      setStatus('SUCCESS');
-      setEmail('');
+    try {
+      const WEBHOOK_URL = "https://hook.eu1.make.com/29xiyrfqm8cqq5r2braoc5e0vg40fsa1";
+      const response = await fetch(WEBHOOK_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ 
+          email: email,
+          timestamp: new Date().toISOString(),
+          metadata: {
+            coreTemp: data.coreTemp,
+            origin: "SOMA_v0.1_UPLINK"
+          }
+        }),
+      });
+
+      if (response.ok) {
+        onLog('OK', 'DATABASE', `UPLINK_STABLE: ${email.toUpperCase()}_NODE_REGISTERED`);
+        setStatus('SUCCESS');
+        setEmail('');
+        setTimeout(() => setStatus('IDLE'), 5000);
+      } else {
+        throw new Error("SERVER_REJECTED_UPLINK");
+      }
+    } catch (err) {
+      console.error(err);
+      onLog('ERROR', 'NETWORK', 'UPLINK_TRANSMISSION_FAILURE');
+      setStatus('ERROR');
       setTimeout(() => setStatus('IDLE'), 3000);
-    }, 1000);
+    }
   };
 
   return (
@@ -70,7 +92,6 @@ const Hero: React.FC<HeroProps> = ({ data, onLog, isLiveActive, onToggleLive, is
               onClick={handleAudioToggle}
               className="group relative px-10 py-4 bg-transparent border border-purple-500/30 overflow-hidden hover:border-purple-500 transition-all duration-300 shadow-[0_0_15px_rgba(168,85,247,0.1)] hover:shadow-[0_0_25px_rgba(168,85,247,0.2)]"
             >
-              {/* Corner Accents */}
               <div className="absolute top-0 left-0 w-1 h-1 bg-purple-500" />
               <div className="absolute bottom-0 right-0 w-1 h-1 bg-purple-500" />
               <div className="absolute inset-0 bg-purple-500/5 -translate-x-full group-hover:translate-x-0 transition-transform duration-500" />
@@ -82,14 +103,12 @@ const Hero: React.FC<HeroProps> = ({ data, onLog, isLiveActive, onToggleLive, is
           </div>
         ) : (
           <div className="relative flex flex-col items-center justify-center animate-in zoom-in-95 fade-in duration-700 w-full">
-            {/* Spinning Holographic HUD elements */}
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
               <div className="w-32 h-32 border-t-2 border-l-2 border-purple-500/40 rounded-full animate-[spin_4s_linear_infinite]" />
               <div className="w-28 h-28 border-b-2 border-r-2 border-purple-400/20 rounded-full animate-[spin_3s_linear_infinite_reverse]" />
               <div className="w-24 h-24 border border-dashed border-purple-500/10 rounded-full animate-[ping_2s_infinite]" />
             </div>
 
-            {/* Pulsing Core */}
             <div className="relative mb-4">
               <div className="w-4 h-4 bg-purple-500 rounded-full animate-pulse shadow-[0_0_20px_rgba(168,85,247,1)]" />
             </div>
@@ -155,7 +174,7 @@ const Hero: React.FC<HeroProps> = ({ data, onLog, isLiveActive, onToggleLive, is
           onClick={handleActionClick}
           className={`w-full group relative flex items-center justify-center gap-4 px-8 py-6 text-sm font-bold tracking-[0.3em] uppercase transition-all duration-500 overflow-hidden ${
             isLiveActive 
-            ? 'bg-zinc-900 border-2 border-red-500/50 text-red-400' 
+            ? 'bg-zinc-900 border-2 border-red-500/50 text-red-400 shadow-[0_0_40px_rgba(239,68,68,0.2)]' 
             : 'bg-purple-600 border-2 border-purple-400 text-white shadow-[0_0_40px_rgba(168,85,247,0.4)] hover:shadow-[0_0_60px_rgba(168,85,247,0.6)] hover:bg-purple-500'
           }`}
         >
@@ -201,7 +220,7 @@ const Hero: React.FC<HeroProps> = ({ data, onLog, isLiveActive, onToggleLive, is
         >
           <div className="absolute inset-0 pointer-events-none opacity-20 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(168,85,247,0.25)_50%)] bg-[length:100%_4px]" />
           
-          <div className="relative flex-1 flex-row items-center flex">
+          <div className="relative flex-1 flex flex-row items-center">
             <span className="pl-4 pr-2 text-xs text-purple-500 font-bold animate-pulse">
               &gt;
             </span>
@@ -211,7 +230,7 @@ const Hero: React.FC<HeroProps> = ({ data, onLog, isLiveActive, onToggleLive, is
               disabled={status !== 'IDLE' && status !== 'ERROR'}
               onChange={(e) => setEmail(e.target.value)}
               placeholder={status === 'SUCCESS' ? "NODE_REGISTERED" : "UPLINK_IDENTITY_EMAIL"}
-              className="bg-transparent flex-1 py-5 text-sm outline-none placeholder:text-zinc-600 focus:placeholder-transparent transition-all disabled:opacity-50 text-white font-medium"
+              className="bg-transparent flex-1 py-5 text-sm outline-none placeholder:text-zinc-700 focus:placeholder-transparent transition-all disabled:opacity-50 text-white font-medium"
             />
           </div>
 
