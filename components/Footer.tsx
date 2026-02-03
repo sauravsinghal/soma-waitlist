@@ -84,7 +84,7 @@ const Footer: React.FC = () => {
             </span>
             <p className="text-[10px] text-zinc-400 leading-relaxed uppercase font-medium tracking-wide">
               Systems thinker and health obsessive, raised on Elon-style first principles and allergic to hand-wavy wellness advice. 
-              Mad that no one built a real personal AI assistant for the body, so now he’s designing one: a metabolic OS that quietly 
+              Mad that no one built a real personal AI assistant for the body yet, so now he’s designing one: a metabolic OS that quietly 
               runs your diet, routine and recovery in the background while you build the rest of your life.
             </p>
           </div>
