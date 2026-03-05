@@ -192,6 +192,31 @@ const Hero: React.FC<HeroProps> = ({ data, onLog, isLiveActive, onToggleLive, is
         </button>
       </div>
 
+     {/* SOMA Game Button */}
+      <div className="max-w-md mx-auto">
+        
+          href="https://sauravsinghal.github.io/soma-game/"
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={playClickSound}
+          className="group relative w-full flex items-center justify-center gap-4 px-8 py-5 border-2 border-purple-500/30 bg-transparent hover:border-purple-400 hover:bg-purple-500/10 transition-all duration-500 overflow-hidden"
+        >
+          <div className="absolute top-0 left-0 w-1 h-1 bg-purple-500/60" />
+          <div className="absolute bottom-0 right-0 w-1 h-1 bg-purple-500/60" />
+          <div className="absolute inset-0 bg-purple-500/5 -translate-x-full group-hover:translate-x-0 transition-transform duration-700 ease-in-out" />
+
+          <span className="text-lg relative">🎮</span>
+          <div className="relative flex flex-col items-start">
+            <span className="text-[11px] font-black tracking-[0.35em] text-white uppercase">
+              EXPERIENCE_SOMA
+            </span>
+            <span className="text-[9px] font-bold tracking-[0.25em] text-purple-400 uppercase">
+              Play the interactive demo →
+            </span>
+          </div>
+        </a>
+      </div>
+
       <div className="max-w-6xl mx-auto px-6 py-4">
         <div className="h-px w-full bg-purple-500/20" />
       </div>
