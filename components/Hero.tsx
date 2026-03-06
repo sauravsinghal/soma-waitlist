@@ -90,13 +90,13 @@ const Hero: React.FC<HeroProps> = ({ data, onLog, isLiveActive, onToggleLive, is
             
             <button 
               onClick={handleAudioToggle}
-              className="group relative px-10 py-4 bg-transparent border border-purple-500/30 overflow-hidden hover:border-purple-500 transition-all duration-300 shadow-[0_0_15px_rgba(168,85,247,0.1)] hover:shadow-[0_0_25px_rgba(168,85,247,0.2)]"
+              className="group relative px-10 py-4 bg-transparent border border-lime-500/30 overflow-hidden hover:border-lime-500 transition-all duration-300 shadow-[0_0_15px_rgba(108,242,13,0.1)] hover:shadow-[0_0_25px_rgba(108,242,13,0.2)]"
             >
-              <div className="absolute top-0 left-0 w-1 h-1 bg-purple-500" />
-              <div className="absolute bottom-0 right-0 w-1 h-1 bg-purple-500" />
-              <div className="absolute inset-0 bg-purple-500/5 -translate-x-full group-hover:translate-x-0 transition-transform duration-500" />
+              <div className="absolute top-0 left-0 w-1 h-1 bg-lime-500" />
+              <div className="absolute bottom-0 right-0 w-1 h-1 bg-lime-500" />
+              <div className="absolute inset-0 bg-lime-500/5 -translate-x-full group-hover:translate-x-0 transition-transform duration-500" />
               
-              <span className="relative text-[10px] font-black tracking-[0.4em] text-purple-400 group-hover:text-white transition-colors">
+              <span className="relative text-[10px] font-black tracking-[0.4em] text-lime-400 group-hover:text-white transition-colors">
                 [ACTIVATE_SOMA_AMBIENT]
               </span>
             </button>
@@ -104,28 +104,28 @@ const Hero: React.FC<HeroProps> = ({ data, onLog, isLiveActive, onToggleLive, is
         ) : (
           <div className="relative flex flex-col items-center justify-center animate-in zoom-in-95 fade-in duration-700 w-full">
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-              <div className="w-32 h-32 border-t-2 border-l-2 border-purple-500/40 rounded-full animate-[spin_4s_linear_infinite]" />
-              <div className="w-28 h-28 border-b-2 border-r-2 border-purple-400/20 rounded-full animate-[spin_3s_linear_infinite_reverse]" />
-              <div className="w-24 h-24 border border-dashed border-purple-500/10 rounded-full animate-[ping_2s_infinite]" />
+              <div className="w-32 h-32 border-t-2 border-l-2 border-lime-500/40 rounded-full animate-[spin_4s_linear_infinite]" />
+              <div className="w-28 h-28 border-b-2 border-r-2 border-lime-400/20 rounded-full animate-[spin_3s_linear_infinite_reverse]" />
+              <div className="w-24 h-24 border border-dashed border-lime-500/10 rounded-full animate-[ping_2s_infinite]" />
             </div>
 
             <div className="relative mb-4">
-              <div className="w-4 h-4 bg-purple-500 rounded-full animate-pulse shadow-[0_0_20px_rgba(168,85,247,1)]" />
+              <div className="w-4 h-4 bg-lime-500 rounded-full animate-pulse shadow-[0_0_20px_rgba(108,242,13,1)]" />
             </div>
 
             <div className="flex flex-col items-center gap-3">
-              <div className="text-[8px] font-black tracking-[0.6em] text-purple-500/60 uppercase animate-pulse">
+              <div className="text-[8px] font-black tracking-[0.6em] text-lime-500/60 uppercase animate-pulse">
                 UPLINK_SYNCED // IMMERSION_ON
               </div>
               
               <button 
                 onClick={handleAudioToggle}
-                className="group relative px-6 py-2 border border-purple-500/40 bg-purple-500/10 hover:bg-red-500/10 hover:border-red-500/60 transition-all duration-300"
+                className="group relative px-6 py-2 border border-lime-500/40 bg-lime-500/10 hover:bg-red-500/10 hover:border-red-500/60 transition-all duration-300"
               >
-                <div className="absolute -top-[1px] -left-[1px] w-1 h-1 bg-purple-500 group-hover:bg-red-500" />
-                <div className="absolute -bottom-[1px] -right-[1px] w-1 h-1 bg-purple-500 group-hover:bg-red-500" />
+                <div className="absolute -top-[1px] -left-[1px] w-1 h-1 bg-lime-500 group-hover:bg-red-500" />
+                <div className="absolute -bottom-[1px] -right-[1px] w-1 h-1 bg-lime-500 group-hover:bg-red-500" />
                 
-                <span className="text-[9px] font-black tracking-[0.4em] text-purple-400 group-hover:text-red-400 uppercase">
+                <span className="text-[9px] font-black tracking-[0.4em] text-lime-400 group-hover:text-red-400 uppercase">
                   [CEASE_TRANSMISSION]
                 </span>
               </button>
@@ -141,15 +141,15 @@ const Hero: React.FC<HeroProps> = ({ data, onLog, isLiveActive, onToggleLive, is
            </svg>
         </div>
 
-        <div className="relative p-12 border border-purple-500/20">
-          <div className="absolute top-0 left-0 w-2 h-2 bg-purple-500" />
-          <div className="absolute top-0 right-0 w-2 h-2 bg-purple-500/20" />
-          <div className="absolute bottom-0 left-0 w-2 h-2 bg-purple-500/20" />
-          <div className="absolute bottom-0 right-0 w-2 h-2 bg-purple-500" />
+        <div className="relative p-12 border border-lime-500/20">
+          <div className="absolute top-0 left-0 w-2 h-2 bg-lime-500" />
+          <div className="absolute top-0 right-0 w-2 h-2 bg-lime-500/20" />
+          <div className="absolute bottom-0 left-0 w-2 h-2 bg-lime-500/20" />
+          <div className="absolute bottom-0 right-0 w-2 h-2 bg-lime-500" />
           
           <div className="text-xs text-zinc-500 mb-2 uppercase tracking-tighter font-bold">CORE_TEMP</div>
           <div className="text-5xl font-bold tracking-tight flicker">
-            {data.coreTemp}<span className="text-purple-500">°C</span>
+            {data.coreTemp}<span className="text-lime-500">°C</span>
           </div>
         </div>
       </div>
@@ -158,7 +158,7 @@ const Hero: React.FC<HeroProps> = ({ data, onLog, isLiveActive, onToggleLive, is
         <h1 className="text-4xl md:text-7xl font-bold tracking-tighter leading-none uppercase">
           THE METABOLIC OS
         </h1>
-        <h2 className="text-2xl md:text-5xl font-bold tracking-tighter text-purple-600 uppercase">
+        <h2 className="text-2xl md:text-5xl font-bold tracking-tighter text-lime-600 uppercase">
           FOR THE 0.1%
         </h2>
       </div>
@@ -175,7 +175,7 @@ const Hero: React.FC<HeroProps> = ({ data, onLog, isLiveActive, onToggleLive, is
           className={`w-full group relative flex items-center justify-center gap-4 px-8 py-6 text-sm font-bold tracking-[0.3em] uppercase transition-all duration-500 overflow-hidden ${
             isLiveActive 
             ? 'bg-zinc-900 border-2 border-red-500/50 text-red-400 shadow-[0_0_40px_rgba(239,68,68,0.2)]' 
-            : 'bg-purple-600 border-2 border-purple-400 text-white shadow-[0_0_40px_rgba(168,85,247,0.4)] hover:shadow-[0_0_60px_rgba(168,85,247,0.6)] hover:bg-purple-500'
+            : 'bg-lime-600 border-2 border-lime-400 text-white shadow-[0_0_40px_rgba(108,242,13,0.4)] hover:shadow-[0_0_60px_rgba(108,242,13,0.6)] hover:bg-lime-500'
           }`}
         >
           {!isLiveActive && (
@@ -199,18 +199,18 @@ const Hero: React.FC<HeroProps> = ({ data, onLog, isLiveActive, onToggleLive, is
     target="_blank"
     rel="noopener noreferrer"
     onClick={playClickSound}
-    className="group relative w-full flex items-center justify-center gap-4 px-8 py-5 border-2 border-purple-500/30 bg-transparent hover:border-purple-400 hover:bg-purple-500/10 transition-all duration-500 overflow-hidden"
+    className="group relative w-full flex items-center justify-center gap-4 px-8 py-5 border-2 border-lime-500/30 bg-transparent hover:border-lime-400 hover:bg-lime-500/10 transition-all duration-500 overflow-hidden"
   >
-    <div className="absolute top-0 left-0 w-1 h-1 bg-purple-500/60" />
-    <div className="absolute bottom-0 right-0 w-1 h-1 bg-purple-500/60" />
-    <div className="absolute inset-0 bg-purple-500/5 -translate-x-full group-hover:translate-x-0 transition-transform duration-700 ease-in-out" />
+    <div className="absolute top-0 left-0 w-1 h-1 bg-lime-500/60" />
+    <div className="absolute bottom-0 right-0 w-1 h-1 bg-lime-500/60" />
+    <div className="absolute inset-0 bg-lime-500/5 -translate-x-full group-hover:translate-x-0 transition-transform duration-700 ease-in-out" />
 
     <span className="text-lg relative">🎮</span>
     <div className="relative flex flex-col items-start">
       <span className="text-[11px] font-black tracking-[0.35em] text-white uppercase">
         EXPERIENCE_SOMA
       </span>
-      <span className="text-[9px] font-bold tracking-[0.25em] text-purple-400 uppercase">
+      <span className="text-[9px] font-bold tracking-[0.25em] text-lime-400 uppercase">
         Play the interactive demo →
       </span>
     </div>
@@ -218,17 +218,17 @@ const Hero: React.FC<HeroProps> = ({ data, onLog, isLiveActive, onToggleLive, is
 </div>
 
       <div className="max-w-6xl mx-auto px-6 py-4">
-        <div className="h-px w-full bg-purple-500/20" />
+        <div className="h-px w-full bg-lime-500/20" />
       </div>
 
       <div className="max-w-md mx-auto space-y-6 pt-0">
         <div className="flex flex-col items-center gap-2">
            <div className="flex items-center gap-3 w-full">
-              <div className="h-px flex-1 bg-purple-500/20" />
-              <span className="text-[10px] font-bold tracking-[0.4em] text-purple-400 uppercase whitespace-nowrap">
+              <div className="h-px flex-1 bg-lime-500/20" />
+              <span className="text-[10px] font-bold tracking-[0.4em] text-lime-400 uppercase whitespace-nowrap">
                 WAITLIST_PROTOCOL_v0.1
               </span>
-              <div className="h-px flex-1 bg-purple-500/20" />
+              <div className="h-px flex-1 bg-lime-500/20" />
            </div>
            <p className="text-[9px] text-zinc-500 tracking-widest uppercase font-bold">
              SECURE YOUR BIOLOGICAL NODE IN THE NEXT COHORT
@@ -240,13 +240,13 @@ const Hero: React.FC<HeroProps> = ({ data, onLog, isLiveActive, onToggleLive, is
           className={`relative flex items-center border-2 transition-all duration-500 overflow-hidden ${
             status === 'SUCCESS' ? 'border-green-500 shadow-[0_0_25px_rgba(34,197,94,0.4)]' : 
             status === 'ERROR' ? 'border-red-500 shadow-[0_0_25px_rgba(239,68,68,0.4)]' : 
-            'border-purple-500/40 bg-purple-500/5'
+            'border-lime-500/40 bg-lime-500/5'
           } group`}
         >
-          <div className="absolute inset-0 pointer-events-none opacity-20 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(168,85,247,0.25)_50%)] bg-[length:100%_4px]" />
+          <div className="absolute inset-0 pointer-events-none opacity-20 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(108,242,13,0.25)_50%)] bg-[length:100%_4px]" />
           
           <div className="relative flex-1 flex flex-row items-center">
-            <span className="pl-4 pr-2 text-xs text-purple-500 font-bold animate-pulse">
+            <span className="pl-4 pr-2 text-xs text-lime-500 font-bold animate-pulse">
               &gt;
             </span>
             <input 
@@ -262,11 +262,11 @@ const Hero: React.FC<HeroProps> = ({ data, onLog, isLiveActive, onToggleLive, is
           <button 
             type="submit"
             disabled={status === 'PROCESSING'}
-            className={`relative px-10 py-5 text-xs font-black tracking-[0.25em] transition-all border-l-2 border-purple-500/40 ${
+            className={`relative px-10 py-5 text-xs font-black tracking-[0.25em] transition-all border-l-2 border-lime-500/40 ${
               status === 'PROCESSING' ? 'bg-zinc-800 animate-pulse cursor-wait' :
               status === 'SUCCESS' ? 'bg-green-600 text-white border-green-500' :
               status === 'ERROR' ? 'bg-red-900/50 text-white border-red-500' :
-              'bg-purple-600 hover:bg-purple-400 text-white shadow-[inset_0_0_20px_rgba(255,255,255,0.2)]'
+              'bg-lime-600 hover:bg-lime-400 text-white shadow-[inset_0_0_20px_rgba(255,255,255,0.2)]'
             }`}
           >
             {status === 'IDLE' ? 'SECURE_ACCESS' : status}
@@ -275,10 +275,10 @@ const Hero: React.FC<HeroProps> = ({ data, onLog, isLiveActive, onToggleLive, is
 
         <div className="flex justify-between items-center px-1">
           <div className="flex items-center gap-2">
-            <span className="w-1.5 h-1.5 rounded-full bg-purple-500 animate-ping" />
+            <span className="w-1.5 h-1.5 rounded-full bg-lime-500 animate-ping" />
             <span className="text-[9px] text-zinc-500 tracking-tighter font-bold uppercase">94%_CAPACITY_REACHED</span>
           </div>
-          <span className="text-[9px] text-purple-400/60 font-mono italic font-bold">PRIORITY_QUEUE_ACTIVE</span>
+          <span className="text-[9px] text-lime-400/60 font-mono italic font-bold">PRIORITY_QUEUE_ACTIVE</span>
         </div>
       </div>
 
