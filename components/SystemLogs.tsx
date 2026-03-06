@@ -32,13 +32,13 @@ const SystemLogs: React.FC<SystemLogsProps> = ({ logs }) => {
 
       <div className="space-y-6">
         <div className="flex items-center gap-3">
-          <span className="bg-purple-900 text-purple-300 text-[9px] px-1.5 py-0.5 font-bold">MODULE_02</span>
-          <h3 className="text-sm font-bold tracking-widest uppercase text-purple-500">SOMA_SYSTEM.RUN</h3>
+          <span className="bg-lime-900 text-lime-300 text-[9px] px-1.5 py-0.5 font-bold">MODULE_02</span>
+          <h3 className="text-sm font-bold tracking-widest uppercase text-lime-500">SOMA_SYSTEM.RUN</h3>
         </div>
         <div className="space-y-3 h-[120px] overflow-hidden">
           {logs.map((log) => (
             <div key={log.id} className="flex gap-4 items-start text-[10px] font-medium tracking-wider animate-in fade-in slide-in-from-left-2 duration-300">
-              <span className={log.type === 'ERROR' ? 'text-red-500' : 'text-purple-500'}>
+              <span className={log.type === 'ERROR' ? 'text-red-500' : 'text-lime-500'}>
                 [{log.type}]
               </span>
               <div className="flex flex-col">
