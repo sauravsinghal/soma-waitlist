@@ -87,7 +87,7 @@ const App: React.FC = () => {
   }, []);
 
   return (
-    <div className="relative min-h-screen grid-bg selection:bg-purple-500 selection:text-white pb-20">
+    <div className="relative min-h-screen grid-bg selection:bg-lime-500 selection:text-white pb-20">
       <Header />
       
       <main className="max-w-6xl mx-auto px-6 py-12 space-y-24">
@@ -118,8 +118,8 @@ const App: React.FC = () => {
       </main>
 
       {/* Decorative side bars */}
-      <div className="fixed left-0 top-0 h-full w-1 bg-purple-900/20" />
-      <div className="fixed right-0 top-0 h-full w-1 bg-purple-900/20" />
+      <div className="fixed left-0 top-0 h-full w-1 bg-lime-900/20" />
+      <div className="fixed right-0 top-0 h-full w-1 bg-lime-900/20" />
     </div>
   );
 };
