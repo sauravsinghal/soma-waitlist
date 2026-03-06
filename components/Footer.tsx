@@ -5,7 +5,7 @@ const Footer: React.FC = () => {
   return (
     <footer className="pt-32 pb-16 space-y-20 text-center overflow-hidden">
       {/* Human Interface Mode Switch */}
-      <div className="max-w-2xl mx-auto space-y-6 px-6 py-12 border border-purple-500/10 bg-zinc-900/5 rounded-xl">
+      <div className="max-w-2xl mx-auto space-y-6 px-6 py-12 border border-lime-500/10 bg-zinc-900/5 rounded-xl">
         <div className="text-[12px] text-zinc-400 tracking-[0.3em] uppercase leading-relaxed font-bold">
           THIS INTERFACE IS FOR YOUR AI AGENT.<br />
           IF YOU’RE A HUMAN, CLICK BELOW.
@@ -14,7 +14,7 @@ const Footer: React.FC = () => {
           href="https://soma-waitlist-05k5t90.public.builtwithrocket.new/" 
           target="_blank" 
           rel="noreferrer"
-          className="inline-block px-10 py-3 border border-purple-500/30 hover:border-purple-500 hover:bg-purple-500/10 text-purple-400 text-[10px] font-bold tracking-[0.4em] uppercase transition-all rounded-full"
+          className="inline-block px-10 py-3 border border-lime-500/30 hover:border-lime-500 hover:bg-lime-500/10 text-lime-400 text-[10px] font-bold tracking-[0.4em] uppercase transition-all rounded-full"
         >
           [HUMAN_INTERFACE]
         </a>
@@ -26,7 +26,7 @@ const Footer: React.FC = () => {
           JOIN THE PROTOCOL.
         </h2>
         
-        <div className="w-12 h-px bg-purple-500/20 mx-auto" />
+        <div className="w-12 h-px bg-lime-500/20 mx-auto" />
         
         <p className="max-w-4xl mx-auto text-[10px] md:text-[12px] text-zinc-500 uppercase tracking-widest leading-relaxed font-medium">
           The network is expanding. Soma isn't just an assistant—it's the first autonomous <br className="hidden md:block" />
@@ -35,16 +35,16 @@ const Footer: React.FC = () => {
 
         {/* Cyberpunk Instagram Button */}
         <div className="pt-4 flex flex-col items-center gap-6">
-          <span className="text-[9px] text-purple-500/40 font-bold tracking-[0.6em] uppercase">
+          <span className="text-[9px] text-lime-500/40 font-bold tracking-[0.6em] uppercase">
             SYNC_WITH_SOMA_ON_SOCIAL
           </span>
           <a 
             href="https://www.instagram.com/soma.assistant/" 
             target="_blank" 
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-3 px-10 py-4 border border-purple-500/20 hover:border-purple-400 bg-black/40 hover:bg-purple-500/5 text-purple-400 text-[10px] font-bold tracking-[0.4em] transition-all group relative overflow-hidden"
+            className="inline-flex items-center gap-3 px-10 py-4 border border-lime-500/20 hover:border-lime-400 bg-black/40 hover:bg-lime-500/5 text-lime-400 text-[10px] font-bold tracking-[0.4em] transition-all group relative overflow-hidden"
           >
-            <div className="absolute inset-0 bg-purple-500/5 translate-y-full group-hover:translate-y-0 transition-transform duration-500" />
+            <div className="absolute inset-0 bg-lime-500/5 translate-y-full group-hover:translate-y-0 transition-transform duration-500" />
             
             <svg className="w-4 h-4 relative z-10 transition-transform group-hover:rotate-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
@@ -55,8 +55,8 @@ const Footer: React.FC = () => {
             <span className="relative z-10 uppercase">SOMA_INSTAGRAM</span>
             
             {/* Corner Markers */}
-            <div className="absolute top-0 left-0 w-1 h-1 bg-purple-500" />
-            <div className="absolute bottom-0 right-0 w-1 h-1 bg-purple-500" />
+            <div className="absolute top-0 left-0 w-1 h-1 bg-lime-500" />
+            <div className="absolute bottom-0 right-0 w-1 h-1 bg-lime-500" />
           </a>
         </div>
 
@@ -78,8 +78,8 @@ const Footer: React.FC = () => {
         <div className="grid md:grid-cols-3 gap-16 text-left relative z-10">
           {/* Architect Profile */}
           <div className="space-y-6">
-            <span className="text-[10px] font-bold text-purple-500 tracking-[0.4em] uppercase flex items-center gap-3">
-              <span className="w-1 h-1 bg-purple-500 rounded-full shadow-[0_0_8px_rgba(168,85,247,0.8)]" />
+            <span className="text-[10px] font-bold text-lime-500 tracking-[0.4em] uppercase flex items-center gap-3">
+              <span className="w-1 h-1 bg-lime-500 rounded-full shadow-[0_0_8px_rgba(108,242,13,0.8)]" />
               ARCHITECT_PROFILE
             </span>
             <p className="text-[10px] text-zinc-400 leading-relaxed uppercase font-medium tracking-wide">
@@ -116,9 +116,9 @@ const Footer: React.FC = () => {
       <div className="flex flex-col md:flex-row justify-between items-center text-[9px] text-zinc-800 tracking-[0.4em] uppercase border-t border-zinc-900 pt-10 px-6 font-bold gap-6">
         <span>© 2024 SOMA_METABOLIC_ARCHITECTS</span>
         <div className="flex gap-10">
-          <a href="#" className="hover:text-purple-500 transition-colors">[MANIFESTO]</a>
-          <a href="#" className="hover:text-purple-500 transition-colors">[PRIVACY]</a>
-          <a href="https://www.instagram.com/soma.assistant/" className="hover:text-purple-500 transition-colors">[UPLINK]</a>
+          <a href="#" className="hover:text-lime-500 transition-colors">[MANIFESTO]</a>
+          <a href="#" className="hover:text-lime-500 transition-colors">[PRIVACY]</a>
+          <a href="https://www.instagram.com/soma.assistant/" className="hover:text-lime-500 transition-colors">[UPLINK]</a>
         </div>
       </div>
     </footer>
