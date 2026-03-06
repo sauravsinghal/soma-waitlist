@@ -37,10 +37,10 @@ const ExecutionCycle: React.FC = () => {
         {EVENTS.map((event) => (
           <div key={event.time} className="relative">
             {/* Indicator */}
-            <div className={`absolute -left-[37px] top-1 w-4 h-4 border ${event.active ? 'bg-purple-600 border-purple-400 shadow-[0_0_10px_rgba(168,85,247,0.5)]' : 'bg-black border-zinc-800'}`} />
+            <div className={`absolute -left-[37px] top-1 w-4 h-4 border ${event.active ? 'bg-lime-600 border-lime-400 shadow-[0_0_10px_rgba(108,242,13,0.5)]' : 'bg-black border-zinc-800'}`} />
             
             <div className="space-y-1">
-              <span className={`text-[10px] font-bold tracking-widest ${event.active ? 'text-purple-500' : 'text-zinc-600'}`}>T={event.time}</span>
+              <span className={`text-[10px] font-bold tracking-widest ${event.active ? 'text-lime-500' : 'text-zinc-600'}`}>T={event.time}</span>
               <h4 className="text-sm font-bold tracking-widest text-zinc-100 uppercase">{event.title}</h4>
               <p className="text-[11px] text-zinc-500 italic font-light leading-relaxed">{event.desc}</p>
             </div>
