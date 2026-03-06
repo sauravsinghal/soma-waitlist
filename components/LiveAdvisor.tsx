@@ -176,9 +176,9 @@ const ai = new GoogleGenAI({ apiKey });
   }, []);
 
   return (
-    <div className="w-80 bg-zinc-900 border-2 border-purple-500/40 p-6 shadow-[0_0_30px_rgba(168,85,247,0.2)] space-y-4 backdrop-blur-xl">
+    <div className="w-80 bg-zinc-900 border-2 border-lime-500/40 p-6 shadow-[0_0_30px_rgba(108,242,13,0.2)] space-y-4 backdrop-blur-xl">
       <div className="flex justify-between items-center text-[10px] tracking-widest font-bold">
-        <span className="text-purple-400 uppercase">SOMA_LIVE_LINK</span>
+        <span className="text-lime-400 uppercase">SOMA_LIVE_LINK</span>
         <span className={`${status === 'CONNECTED' ? 'text-green-500' : 'text-zinc-600'} animate-pulse`}>
           {status}
         </span>
@@ -193,9 +193,9 @@ const ai = new GoogleGenAI({ apiKey });
 
       <div className="flex items-center gap-2">
         <div className="flex-1 h-1 bg-zinc-800 rounded-full overflow-hidden">
-          <div className={`h-full bg-purple-500 transition-all duration-300 ${status === 'CONNECTED' ? 'w-full animate-pulse' : 'w-0'}`} />
+          <div className={`h-full bg-lime-500 transition-all duration-300 ${status === 'CONNECTED' ? 'w-full animate-pulse' : 'w-0'}`} />
         </div>
-        <div className="w-2 h-2 rounded-full bg-purple-500 shadow-[0_0_5px_rgba(168,85,247,0.8)]" />
+        <div className="w-2 h-2 rounded-full bg-lime-500 shadow-[0_0_5px_rgba(108,242,13,0.8)]" />
       </div>
     </div>
   );
