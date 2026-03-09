@@ -2,19 +2,28 @@
 <img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
 </div>
 
-# Run and deploy your AI Studio app
+# Run locally (frontend + secure SOMA voice backend)
 
-This contains everything you need to run your app locally.
+## What this setup does
+- `TALK_TO_SOMA_ASSISTANT` opens a realtime voice assistant (mic conversation, not chat text).
+- OpenAI key stays only on server (`OPENAI_API_KEY` in `.env`).
+- Browser gets short-lived token from `/api/realtime/session` and connects to OpenAI Realtime directly over WebRTC.
 
-View your app in AI Studio: https://ai.studio/apps/drive/1CqUqmuDuxiqOaXK9lw2fNP25a5eHKC6X
-
-## Run Locally
-
-**Prerequisites:**  Node.js
-
-
+## Setup
 1. Install dependencies:
    `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+2. Create `.env` in project root:
+   `OPENAI_API_KEY=your_openai_api_key`
+
+Optional:
+- `OPENAI_REALTIME_MODEL=gpt-realtime`
+- `OPENAI_VOICE=verse`
+- `OPENAI_MODEL=gpt-4.1-mini`
+- `PORT=8787`
+
+## Run
+- Start frontend + backend:
+  `npm run dev:full`
+
+Frontend: `http://localhost:3000`
+Backend health check: `http://localhost:8787/api/health`

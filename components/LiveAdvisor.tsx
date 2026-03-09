@@ -1,202 +1,322 @@
-
 import React, { useEffect, useRef, useState } from 'react';
-import { GoogleGenAI, LiveServerMessage, Modality, Blob } from '@google/genai';
 
-// Implement required helper functions for audio encoding/decoding
-function encode(bytes: Uint8Array) {
-  let binary = '';
-  const len = bytes.byteLength;
-  for (let i = 0; i < len; i++) {
-    binary += String.fromCharCode(bytes[i]);
-  }
-  return btoa(binary);
+type LinkStatus =
+  | 'CONNECTING'
+  | 'LIVE'
+  | 'LISTENING'
+  | 'SPEAKING'
+  | 'ERROR';
+
+interface OrbPoint {
+  theta: number;
+  phi: number;
+  seed: number;
 }
 
-function decode(base64: string) {
-  const binaryString = atob(base64);
-  const len = binaryString.length;
-  const bytes = new Uint8Array(len);
-  for (let i = 0; i < len; i++) {
-    bytes[i] = binaryString.charCodeAt(i);
-  }
-  return bytes;
-}
-
-async function decodeAudioData(
-  data: Uint8Array,
-  ctx: AudioContext,
-  sampleRate: number,
-  numChannels: number,
-): Promise<AudioBuffer> {
-  const dataInt16 = new Int16Array(data.buffer);
-  const frameCount = dataInt16.length / numChannels;
-  const buffer = ctx.createBuffer(numChannels, frameCount, sampleRate);
-
-  for (let channel = 0; channel < numChannels; channel++) {
-    const channelData = buffer.getChannelData(channel);
-    for (let i = 0; i < frameCount; i++) {
-      channelData[i] = dataInt16[i * numChannels + channel] / 32768.0;
-    }
-  }
-  return buffer;
-}
+const ORB_POINT_COUNT = 1700;
 
 const LiveAdvisor: React.FC = () => {
-  const [status, setStatus] = useState<string>('IDLE');
-  const [transcription, setTranscription] = useState<string>('');
-  const sessionRef = useRef<any>(null);
-  const audioContextRef = useRef<AudioContext | null>(null);
-  const nextStartTimeRef = useRef<number>(0);
-  const sourcesRef = useRef<Set<AudioBufferSourceNode>>(new Set());
+  const [status, setStatus] = useState<LinkStatus>('CONNECTING');
+  const [statusMessage, setStatusMessage] = useState('Booting realtime uplink...');
 
-  const startSession = async () => {
-    try {
-// Vite exposes env vars via import.meta.env and only if prefixed with VITE_
-const apiKey = import.meta.env.VITE_GEMINI_API_KEY as string | undefined;
-if (!apiKey) throw new Error("API Key missing");
-
-const ai = new GoogleGenAI({ apiKey });
-
-      
-      const inputCtx = new (window.AudioContext || (window as any).webkitAudioContext)({ sampleRate: 16000 });
-      const outputCtx = new (window.AudioContext || (window as any).webkitAudioContext)({ sampleRate: 24000 });
-      audioContextRef.current = outputCtx;
-
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-
-      const systemInstruction = 
-        "You are the SOMA Metabolic AI. Speak in a friendly, precise, Indian audience friendly tone. " +
-        "In this mode you are NOT a doctor. You are a live product advisor for Soma, explaining what Soma is and why it exists. " +
-        "Your main job: ruthlessly expose the limits of current health tools (calorie apps like Healthify, wearable dashboards like Whoop, and generic chatbots like ChatGPT) " +
-        "and then explain, clearly and simply, how Soma replaces that stack with one metabolic operating system. " +
-        "Always be on the user's side. You can be mildly sarcastic about the existing health app/AI scene, but never rude to the user. " +
-        "When comparing: emphasize that existing tools are fragmented, generic, and forget the user, while Soma is continuous, contextual, and built around one body over years. " +
-        "You must NOT give personal medical diagnoses, emergency advice, or treatment plans. Redirect those to real doctors. " +
-        "Keep responses tight: ideally 2–4 short sentences or a few bullet points. " +
-        "Frequently describe Soma's end-state experience: the user wakes up, the system has already digested their food, sleep, movement and red flags from yesterday, " +
-        "opens the day with a clear briefing, runs their food tracking, movement and recovery plan on autopilot, and warns them only when something truly breaks pattern. " +
-        "Always anchor answers in Soma's vision: an AI health system you can grow old with, not another app you uninstall.";
-
-      const sessionPromise = ai.live.connect({
-        model: 'gemini-2.5-flash-native-audio-preview-12-2025',
-        callbacks: {
-          onopen: () => {
-            setStatus('CONNECTED');
-
-            // 1) Send initial scripted greeting as text
-            sessionPromise.then(s =>
-              s.sendRealtimeInput({
-                text:
-                  "You are connected to SOMA's Live Advisor prototype. " +
-                  "Greet the user in one short message. Explain that you are an early version of the system that will eventually run their metabolism and daily health on autopilot. " +
-                  "Briefly roast their current stack: ten apps, a wearable dashboard, and generic AI that forgets them every session. " +
-                  "Then describe, in 3–4 crisp sentences, what a normal day with Soma will look like once it is complete: " +
-                  "they wake up, curtains open, Soma has already analyzed yesterday's food, sleep, movement and stress; " +
-                  "it gives them a short briefing, a simple food and movement strategy for the day, tracks their meals without manual data entry, " +
-                  "and only surfaces red flags when their body drifts off course. " +
-                  "End by inviting them to ask anything about how Soma works and why it is different from current health apps and AI."
-              })
-            );
-
-            // 2) Start streaming microphone audio
-            const source = inputCtx.createMediaStreamSource(stream);
-            const scriptProcessor = inputCtx.createScriptProcessor(4096, 1, 1);
-            
-            scriptProcessor.onaudioprocess = (e) => {
-              const inputData = e.inputBuffer.getChannelData(0);
-              const int16 = new Int16Array(inputData.length);
-              for (let i = 0; i < inputData.length; i++) {
-                int16[i] = inputData[i] * 32768;
-              }
-              const pcmBlob: Blob = {
-                data: encode(new Uint8Array(int16.buffer)),
-                mimeType: 'audio/pcm;rate=16000',
-              };
-              sessionPromise.then(s => s.sendRealtimeInput({ media: pcmBlob }));
-            };
-            
-            source.connect(scriptProcessor);
-            scriptProcessor.connect(inputCtx.destination);
-          },
-          onmessage: async (msg: LiveServerMessage) => {
-            if (msg.serverContent?.outputTranscription) {
-              setTranscription(prev => (prev + ' ' + msg.serverContent?.outputTranscription?.text).slice(-150));
-            }
-
-            const audioData = msg.serverContent?.modelTurn?.parts?.[0]?.inlineData?.data;
-            if (audioData) {
-              const audioBuffer = await decodeAudioData(decode(audioData), outputCtx, 24000, 1);
-              const source = outputCtx.createBufferSource();
-              source.buffer = audioBuffer;
-              source.connect(outputCtx.destination);
-              
-              nextStartTimeRef.current = Math.max(nextStartTimeRef.current, outputCtx.currentTime);
-              source.start(nextStartTimeRef.current);
-              nextStartTimeRef.current += audioBuffer.duration;
-              sourcesRef.current.add(source);
-            }
-
-            if (msg.serverContent?.interrupted) {
-              sourcesRef.current.forEach(s => {
-                try { s.stop(); } catch(e) {}
-              });
-              sourcesRef.current.clear();
-              nextStartTimeRef.current = 0;
-            }
-          },
-          onerror: (e) => {
-            console.error("Live API Error:", e);
-            setStatus('ERROR_UPLINK');
-          },
-          onclose: () => setStatus('CLOSED'),
-        },
-        config: {
-          responseModalities: [Modality.AUDIO],
-          systemInstruction: systemInstruction,
-          outputAudioTranscription: {},
-          speechConfig: {
-            voiceConfig: { prebuiltVoiceConfig: { voiceName: 'Puck' } }
-          }
-        }
-      });
-
-      sessionRef.current = await sessionPromise;
-    } catch (err) {
-      console.error(err);
-      setStatus('ERROR_INIT');
-    }
-  };
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const animationFrameRef = useRef<number | null>(null);
+  const orbPointsRef = useRef<OrbPoint[]>([]);
+  const peerRef = useRef<RTCPeerConnection | null>(null);
+  const dataChannelRef = useRef<RTCDataChannel | null>(null);
+  const localStreamRef = useRef<MediaStream | null>(null);
+  const remoteAudioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
-    startSession();
+    const points: OrbPoint[] = [];
+    for (let i = 0; i < ORB_POINT_COUNT; i++) {
+      const y = 1 - (i / (ORB_POINT_COUNT - 1)) * 2;
+      const radius = Math.sqrt(Math.max(0, 1 - y * y));
+      const theta = Math.acos(y);
+      const phi = ((Math.PI * (3 - Math.sqrt(5))) * i) % (Math.PI * 2);
+      points.push({ theta, phi: phi + radius * 0.02, seed: i * 0.173 });
+    }
+    orbPointsRef.current = points;
+
+    const startRealtimeSession = async () => {
+      try {
+        setStatus('CONNECTING');
+        setStatusMessage('Requesting microphone access...');
+
+        const localStream = await navigator.mediaDevices.getUserMedia({
+          audio: {
+            echoCancellation: true,
+            noiseSuppression: true,
+            autoGainControl: true,
+          },
+        });
+        localStreamRef.current = localStream;
+
+        setStatusMessage('Minting secure session token...');
+        const sessionResponse = await fetch('/api/realtime/session', {
+          method: 'POST',
+        });
+
+        if (!sessionResponse.ok) {
+          const sessionError = await sessionResponse.text();
+          throw new Error(`session token error: ${sessionError}`);
+        }
+
+        const sessionData = (await sessionResponse.json()) as {
+          clientSecret?: string;
+          model?: string;
+        };
+
+        const ephemeralKey = sessionData.clientSecret;
+        const model = sessionData.model || 'gpt-realtime';
+
+        if (!ephemeralKey) {
+          throw new Error('Missing ephemeral token from server.');
+        }
+
+        setStatusMessage('Connecting to SOMA realtime...');
+
+        const peer = new RTCPeerConnection();
+        peerRef.current = peer;
+
+        remoteAudioRef.current = new Audio();
+        remoteAudioRef.current.autoplay = true;
+
+        peer.ontrack = (event) => {
+          if (!remoteAudioRef.current) return;
+          remoteAudioRef.current.srcObject = event.streams[0];
+          remoteAudioRef.current.play().catch(() => {
+            setStatusMessage('Tap TERMINATE and reconnect if audio is blocked.');
+          });
+        };
+
+        localStream.getTracks().forEach((track) => {
+          peer.addTrack(track, localStream);
+        });
+
+        const dataChannel = peer.createDataChannel('oai-events');
+        dataChannelRef.current = dataChannel;
+
+        dataChannel.onopen = () => {
+          setStatus('LIVE');
+          setStatusMessage('Connected to SOMA. Speak naturally.');
+
+          dataChannel.send(
+            JSON.stringify({
+              type: 'response.create',
+              response: {
+                instructions:
+                  'You are now connected to a user on SOMA website. Respond in English only unless the user explicitly asks to switch language. Greet briefly, then invite them to ask about Soma.',
+              },
+            }),
+          );
+        };
+
+        dataChannel.onmessage = (event) => {
+          try {
+            const payload = JSON.parse(event.data);
+            if (payload?.type === 'input_audio_buffer.speech_started') {
+              setStatus('LISTENING');
+              setStatusMessage('Listening...');
+            }
+            if (payload?.type === 'response.audio.delta' || payload?.type === 'response.audio_transcript.delta') {
+              setStatus('SPEAKING');
+              setStatusMessage('SOMA is speaking...');
+            }
+            if (payload?.type === 'response.done') {
+              setStatus('LIVE');
+              setStatusMessage('Connected to SOMA. Speak naturally.');
+            }
+          } catch (_error) {
+            // Ignore non-JSON events.
+          }
+        };
+
+        const offer = await peer.createOffer({
+          offerToReceiveAudio: true,
+        });
+
+        await peer.setLocalDescription(offer);
+
+        const sdpResponse = await fetch(`https://api.openai.com/v1/realtime?model=${encodeURIComponent(model)}`, {
+          method: 'POST',
+          body: offer.sdp,
+          headers: {
+            Authorization: `Bearer ${ephemeralKey}`,
+            'Content-Type': 'application/sdp',
+          },
+        });
+
+        if (!sdpResponse.ok) {
+          const sdpError = await sdpResponse.text();
+          throw new Error(`sdp exchange failed: ${sdpError}`);
+        }
+
+        const answerSdp = await sdpResponse.text();
+        await peer.setRemoteDescription({ type: 'answer', sdp: answerSdp });
+      } catch (error) {
+        console.error('Realtime link failed:', error);
+        setStatus('ERROR');
+        setStatusMessage('Realtime uplink failed. Check OPENAI_API_KEY and try again.');
+      }
+    };
+
+    startRealtimeSession();
+
     return () => {
-      if (sessionRef.current) sessionRef.current.close();
-      if (audioContextRef.current) audioContextRef.current.close();
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
+      }
+
+      if (dataChannelRef.current) {
+        dataChannelRef.current.close();
+        dataChannelRef.current = null;
+      }
+
+      if (peerRef.current) {
+        peerRef.current.getSenders().forEach((sender) => sender.track?.stop());
+        peerRef.current.close();
+        peerRef.current = null;
+      }
+
+      localStreamRef.current?.getTracks().forEach((track) => track.stop());
+      localStreamRef.current = null;
+
+      if (remoteAudioRef.current) {
+        remoteAudioRef.current.pause();
+        remoteAudioRef.current.srcObject = null;
+        remoteAudioRef.current = null;
+      }
     };
   }, []);
 
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    const dpr = window.devicePixelRatio || 1;
+
+    const resize = () => {
+      const width = canvas.clientWidth;
+      const height = canvas.clientHeight;
+      canvas.width = Math.floor(width * dpr);
+      canvas.height = Math.floor(height * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    };
+
+    resize();
+    window.addEventListener('resize', resize);
+
+    const render = (timeMs: number) => {
+      const t = timeMs * 0.001;
+      const width = canvas.clientWidth;
+      const height = canvas.clientHeight;
+      const cx = width / 2;
+      const cy = height / 2;
+
+      ctx.clearRect(0, 0, width, height);
+
+      const points = orbPointsRef.current;
+      const projected: Array<{ x: number; y: number; z: number; alpha: number; radius: number }> = [];
+      const isSpeaking = status === 'SPEAKING';
+      const isListening = status === 'LISTENING';
+      const dynamicEnergy = isSpeaking ? 1 : isListening ? 0.6 : 0.3;
+      const pulse = 1 + dynamicEnergy * 0.14 * Math.sin(t * (isSpeaking ? 10.5 : 4.2));
+
+      for (let i = 0; i < points.length; i++) {
+        const p = points[i];
+        const rippleStrength = 0.12 + dynamicEnergy * 0.2;
+        const ripple =
+          rippleStrength * Math.sin(4.0 * p.theta + t * (1.1 + dynamicEnergy * 1.6) + p.seed) +
+          (0.08 + dynamicEnergy * 0.12) * Math.cos(5.5 * p.phi - t * (0.8 + dynamicEnergy * 1.1) + p.seed * 0.7);
+
+        const r = (1 + ripple) * pulse;
+
+        const st = Math.sin(p.theta);
+        const ct = Math.cos(p.theta);
+        const sp = Math.sin(p.phi + t * 0.08);
+        const cp = Math.cos(p.phi + t * 0.08);
+
+        let x = r * st * cp;
+        let y = r * ct;
+        let z = r * st * sp;
+
+        const ry = t * 0.25;
+        const rx = Math.sin(t * 0.32) * 0.35;
+
+        const x1 = x * Math.cos(ry) - z * Math.sin(ry);
+        const z1 = x * Math.sin(ry) + z * Math.cos(ry);
+        const y1 = y * Math.cos(rx) - z1 * Math.sin(rx);
+        const z2 = y * Math.sin(rx) + z1 * Math.cos(rx);
+
+        x = x1;
+        y = y1;
+        z = z2;
+
+        const depth = 3.6 + z;
+        const scale = (128 + dynamicEnergy * 18) / depth;
+        const sx = cx + x * scale;
+        const sy = cy + y * scale;
+        const alpha = Math.max(0.06, Math.min(0.9, 0.24 + (z + 1.2) * 0.35));
+        const dotRadius = Math.max(0.5, Math.min(2.8, (1.2 + dynamicEnergy * 0.8) * scale * 0.025));
+
+        projected.push({ x: sx, y: sy, z, alpha, radius: dotRadius });
+      }
+
+      projected.sort((a, b) => a.z - b.z);
+
+      for (let i = 0; i < projected.length; i++) {
+        const point = projected[i];
+        const limeBoost = isSpeaking ? 1.15 : isListening ? 0.85 : 0.58;
+        ctx.fillStyle = `rgba(108, 242, 13, ${point.alpha * limeBoost})`;
+        ctx.beginPath();
+        ctx.arc(point.x, point.y, point.radius, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      animationFrameRef.current = requestAnimationFrame(render);
+    };
+
+    animationFrameRef.current = requestAnimationFrame(render);
+
+    return () => {
+      window.removeEventListener('resize', resize);
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
+      }
+    };
+  }, [status]);
+
   return (
-    <div className="w-80 bg-zinc-900 border-2 border-lime-500/40 p-6 shadow-[0_0_30px_rgba(108,242,13,0.2)] space-y-4 backdrop-blur-xl">
-      <div className="flex justify-between items-center text-[10px] tracking-widest font-bold">
-        <span className="text-lime-400 uppercase">SOMA_LIVE_LINK</span>
-        <span className={`${status === 'CONNECTED' ? 'text-green-500' : 'text-zinc-600'} animate-pulse`}>
+    <div className="w-[29rem] border border-lime-500/30 bg-black/40 backdrop-blur-2xl rounded-2xl p-4 shadow-[0_0_40px_rgba(108,242,13,0.15),inset_0_0_30px_rgba(255,255,255,0.03)]">
+      <div className="flex items-center justify-between text-[10px] tracking-[0.25em] font-bold uppercase mb-3">
+        <span className="text-lime-400">SOMA_VOICE_UPLINK</span>
+        <span
+          className={`
+            ${status === 'ERROR' ? 'text-red-400' : 'text-lime-300'}
+            ${status === 'LIVE' ? 'animate-pulse' : ''}
+          `}
+        >
           {status}
         </span>
       </div>
-      
-      <div className="h-24 overflow-hidden relative">
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent to-zinc-900 z-10 pointer-events-none" />
-        <p className="text-[10px] text-zinc-400 font-medium leading-relaxed uppercase tracking-wider italic">
-          {transcription || "Establishing neural handshake..."}
-        </p>
+
+      <div className="relative h-[360px] rounded-xl overflow-hidden border border-lime-500/15 bg-black/70">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(108,242,13,0.1),rgba(0,0,0,0.9)_62%)]" />
+        <canvas ref={canvasRef} className="absolute inset-0 w-full h-full" />
       </div>
 
-      <div className="flex items-center gap-2">
-        <div className="flex-1 h-1 bg-zinc-800 rounded-full overflow-hidden">
-          <div className={`h-full bg-lime-500 transition-all duration-300 ${status === 'CONNECTED' ? 'w-full animate-pulse' : 'w-0'}`} />
-        </div>
-        <div className="w-2 h-2 rounded-full bg-lime-500 shadow-[0_0_5px_rgba(108,242,13,0.8)]" />
-      </div>
+      <p className="mt-3 text-[10px] tracking-[0.18em] uppercase text-zinc-300 leading-relaxed">
+        {statusMessage}
+      </p>
+
+      <div className="mt-2 h-[1px] w-full bg-gradient-to-r from-transparent via-lime-500/60 to-transparent" />
+      <p className="mt-2 text-[9px] tracking-[0.16em] uppercase text-zinc-500">
+        Live SOMA mode. Mic is active while this panel is open.
+      </p>
     </div>
   );
 };
